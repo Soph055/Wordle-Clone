@@ -17,31 +17,31 @@ The game includes:
 
 ---
 
-## 🎮 Features
+### Features
 
-### ✔️ Word Input Grid
+## Word Input Grid
 - 5 rows (attempts) × 5 columns (letters)  
 - Boxes automatically move as you type  
 - ENTER submits the row  
 - DELETE support  
 - Only letters allowed  
 
-### ✔️ On-Screen Keyboard
+## On-Screen Keyboard
 - Displays QWERTY keyboard  
 - Keys change color (green/yellow/grey) based on guesses  
 - Built automatically using loops  
 
-### ✔️ Word Validation
+## Word Validation
 - Reads from a dictionary file (`words.txt`)  
 - Guess is only accepted if:
   - All 5 letters are filled  
   - The word exists in the dictionary  
 
-### ✔️ Random Word Generation
+## Random Word Generation
 - Game selects from a preset list of words  
 - Uses `Random` to choose one at launch
 
-Technologies used:
+## Technologies used:
 - Java (OOP, event handling)
 - JavaFX (GUI, layouts, styles)
 ---
