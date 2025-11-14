@@ -39,8 +39,11 @@ The game includes:
 
 ### ✔️ Random Word Generation
 - Game selects from a preset list of words  
-- Uses `Random` to choose one at launch  
+- Uses `Random` to choose one at launch
 
+Technologies Used
+Java (OOP, event handling)
+JavaFX (GUI, layouts, styles)
 ---
 
 Built 2020/README updated 2025
