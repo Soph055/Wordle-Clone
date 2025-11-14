@@ -34,8 +34,8 @@ The game includes:
 ### Word Validation
 - Reads from a dictionary file (`words.txt`)  
 - Guess is only accepted if:
-  - All 5 letters are filled  
-  - The word exists in the dictionary  
+- All 5 letters are filled  
+- The word exists in the dictionary  
 
 ### Random Word Generation
 - Game selects from a preset list of words  
