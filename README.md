@@ -41,11 +41,11 @@ The game includes:
 - Game selects from a preset list of words  
 - Uses `Random` to choose one at launch
 
-Technologies Used
+Technologies used:
 Java (OOP, event handling)
 JavaFX (GUI, layouts, styles)
 ---
 
-Built 2020/README updated 2025
+Built 2022/README updated 2025
 
 
