@@ -42,8 +42,8 @@ The game includes:
 - Uses `Random` to choose one at launch
 
 Technologies used:
-Java (OOP, event handling)
-JavaFX (GUI, layouts, styles)
+- Java (OOP, event handling)
+- JavaFX (GUI, layouts, styles)
 ---
 
 Built 2022/README updated 2025
