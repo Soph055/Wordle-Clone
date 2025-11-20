@@ -2,6 +2,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Random;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -54,14 +56,11 @@ public class Wordle {
     File file;
 
     public void initialize() {
-        file = new File(App.class.getResource("words.txt").toString().replace("file:/", ""));
-
         createKeyBoard();
-
-        // Start of textboxes for word input
+    
         for (int j = 0; j < wordleBox.length; j++) {
             wordleBox[j] = new HBox();
-
+    
             for (int n = 0; n < wordleField.length; n++) {
                 wordleField[j][n] = new TextField();
                 wordleField[j][n].setPrefSize(80, 150);
@@ -69,70 +68,60 @@ public class Wordle {
                 wordleField[j][n].setFont(Font.font("Helvetica", FontWeight.BOLD, 36));
                 wordleField[j][n].setEditable(false);
                 wordleBox[j].getChildren().add(wordleField[j][n]);
-
-                // listener to allow only strings to be inputed
+    
+                // listener to allow only letters
                 wordleField[j][n].textProperty().addListener((observable, oldValue, newValue) -> {
-                    if (!newValue.matches("\\sa-zA-Z*")) {
-                        for (int k = 0; k < wordleField.length; k++) {
-                            wordleField[p][i].setText(newValue.replaceFirst("[^\\sa-zA-Z]", ""));
-                        }
+                    if (!newValue.matches("[a-zA-Z]*")) {
+                        wordleField[p][i].setText(newValue.replaceAll("[^a-zA-Z]", ""));
                     }
                 });
-
+    
                 // KeyPressed event
-                wordleField[j][n].setOnKeyPressed(new EventHandler<KeyEvent>() {
-                    @Override
-                    public void handle(javafx.scene.input.KeyEvent key) {
-                        if (key.getCode().equals(KeyCode.ENTER) && wordleField[p][4].isFocused()) {
-                            try {
-                                checkWord();
-                            } catch (IOException e1) {
-                                e1.printStackTrace();
-                            }
-                            if (wordleField[p][4].getText().length() > 0 && valid) {
-                                checkChar();
-                                nextRow();
-                            } else {
-                                for (int s = 0; s < wordleField.length; s++) {
-                                    wordleField[p][s].setEditable(true);
-                                    wordleField[p][i].setText("");
-                                    i = 4;
-                                }
-
-                            }
+                wordleField[j][n].setOnKeyPressed(key -> {
+                    if (key.getCode() == KeyCode.ENTER && wordleField[p][4].isFocused()) {
+                        try {
+                            checkWord(); // no reader needed
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
                         }
-
-                    }
-
-                });
-                // KeyTyped event
-                wordleField[j][n].setOnKeyTyped(new EventHandler<KeyEvent>() {
-                    @Override
-                    public void handle(javafx.scene.input.KeyEvent event) {
-                        int max = 1;
-                        for (int a = 0; a < wordleField.length; a++) {
-                            if (wordleField[p][a].getText().length() > max) {
-                                event.consume();
-                            }
-                        }
-
-                        if (wordleField[p][i].getText().length() > 0 && (!event.getCode().equals(KeyCode.DELETE))) {
-                            i++;
+                        if (wordleField[p][4].getText().length() > 0 && valid) {
+                            checkChar();
+                            nextRow();
                         } else {
-                            i--;
+                            for (int s = 0; s < wordleField.length; s++) {
+                                wordleField[p][s].setEditable(true);
+                                wordleField[p][i].setText("");
+                                i = 4;
+                            }
                         }
-                        nextBox();
                     }
                 });
-
+    
+                // KeyTyped event (unchanged)
+                wordleField[j][n].setOnKeyTyped(event -> {
+                    int max = 1;
+                    for (int a = 0; a < wordleField.length; a++) {
+                        if (wordleField[p][a].getText().length() > max) {
+                            event.consume();
+                        }
+                    }
+    
+                    if (wordleField[p][i].getText().length() > 0) {
+                        i++;
+                    } else {
+                        i--;
+                    }
+                    nextBox();
+                });
+    
             }
             wordleBox[j].setSpacing(5);
             wordleBox[j].setAlignment(Pos.TOP_CENTER);
             textArea.getChildren().add(wordleBox[j]);
-
         }
-
     }
+    
+
 
     public void createKeyBoard() {
         /**
@@ -169,28 +158,22 @@ public class Wordle {
     }
 
     public void checkWord() throws IOException {
-        /**
-         * <p>
-         * Checks if input matches a word from word file, if it does it is a valid input
-         * otherwise it is invalid.
-         * </p>
-         */
-
-        // inputs
-        String inputZero = wordleField[p][0].getText().toLowerCase();
-        String inputOne = wordleField[p][1].getText().toLowerCase();
-        String inputTwo = wordleField[p][2].getText().toLowerCase();
-        String inputThree = wordleField[p][3].getText().toLowerCase();
-        String inputFour = wordleField[p][4].getText().toLowerCase();
-        String totalInput = inputZero + inputOne + inputTwo + inputThree + inputFour;
-
-        BufferedReader read = new BufferedReader(new FileReader(file));
-        if (wordIsThere(totalInput, read)) {
-            valid = true;
-        } else {
-            valid = false;
+        // Gather input from current row
+        StringBuilder totalInputBuilder = new StringBuilder();
+        for (int idx = 0; idx < 5; idx++) {
+            totalInputBuilder.append(wordleField[p][idx].getText().toLowerCase());
+        }
+        String totalInput = totalInputBuilder.toString();
+    
+        // Open words.txt as a resource stream
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(getClass().getResourceAsStream("/words.txt")))) {
+            valid = wordIsThere(totalInput, reader);
         }
     }
+    
+    
+    
 
     private boolean wordIsThere(String totalInput, BufferedReader read) throws IOException {
         /**
